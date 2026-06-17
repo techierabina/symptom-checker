@@ -34,8 +34,8 @@ def check_symptoms(symptoms):
 
     if any(vague in text for vague in VAGUE_INPUTS) or len(text.split()) < 4:
         return """
+        
 **⚠️ Could you be more specific?**
-
 Try describing:
 - What part of your body is affected?
 - How long have you had these symptoms?
@@ -47,7 +47,7 @@ Try describing:
     has_red_flag = any(flag in text for flag in RED_FLAGS)
     if has_red_flag:
         return """
-**Severity: 🔴 SEVERE**
+**Severity: 🚨 SEVERE**
 **Reason: Red flag symptom detected**
 
 **Recommended action:** Seek emergency care immediately. Call 911 if needed.
@@ -59,7 +59,7 @@ Try describing:
     has_moderate_flag = any(flag in text for flag in MODERATE_FLAGS)
     if has_moderate_flag:
         return """
-**Severity: 🟡 MODERATE**
+**Severity: ⚠️ MODERATE**
 **Reason: Moderate symptom detected**
 
 **Recommended action:** Consider seeing a doctor within 24-48 hours.
@@ -77,7 +77,7 @@ Try describing:
     # If model isn't confident enough, default to MODERATE
     if top_score < 70:
         return f"""
-**Severity: 🟡 MODERATE**
+**Severity: ⚠️ MODERATE**
 **Confidence: {top_score}% (low — please describe symptoms in more detail)**
 
 **Recommended action:** Consider seeing a doctor if symptoms persist.
@@ -87,9 +87,9 @@ Try describing:
 """
 
     advice = {
-        "mild symptoms":    ("🟢 MILD",     "Rest at home, stay hydrated, monitor your symptoms."),
-        "moderate symptoms":("🟡 MODERATE", "Consider seeing a doctor within 24-48 hours."),
-        "severe symptoms":  ("🔴 SEVERE",   "Seek emergency care immediately. Call 911 if needed.")
+        "mild symptoms":    ("✅ MILD",     "Rest at home, stay hydrated, monitor your symptoms."),
+        "moderate symptoms":("⚠️ MODERATE", "Consider seeing a doctor within 24-48 hours."),
+        "severe symptoms":  ("🚨 SEVERE",   "Seek emergency care immediately. Call 911 if needed.")
     }
 
     level, action = advice[top_label]
@@ -117,11 +117,11 @@ with gr.Blocks(theme=gr.themes.Soft(font=gr.themes.GoogleFont("Poppins"))) as ap
             )
 
             gr.Markdown("**Try an example:**")
-            btn1 = gr.Button("🟢 Slight headache and tired")
-            btn2 = gr.Button("🟡 Fever 101 and body aches")
-            btn3 = gr.Button("🔴 Chest pain, difficulty breathing")
+            btn1 = gr.Button("✅ Slight headache and tired")
+            btn2 = gr.Button("⚠️ Fever 101 and body aches")
+            btn3 = gr.Button("🚨 Chest pain, difficulty breathing")
             btn4 = gr.Button("❓ I feel bad")
-            btn5 = gr.Button("⚠️ Mild headache but arm numbness")
+            btn5 = gr.Button("🚨 Mild headache but arm numbness")
 
             submit_btn = gr.Button("Check Symptoms", variant="primary")
 
