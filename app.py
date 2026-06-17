@@ -7,6 +7,11 @@ classifier = pipeline(
     model="cross-encoder/nli-MiniLM2-L6-H768"
 )
 print("Model loaded!")
+MILD_FLAGS = [
+    "paper cut", "small cut", "minor scratch",
+    "runny nose", "sneezing", "dry throat",
+    "slight headache", "little tired", "minor bruise"
+]
 
 RED_FLAGS = [
     "chest pain", "cant breathe", "can't breathe", "difficulty breathing",
@@ -34,7 +39,7 @@ def check_symptoms(symptoms):
 
     if any(vague in text for vague in VAGUE_INPUTS) or len(text.split()) < 4:
         return """
-        
+
 **⚠️ Could you be more specific?**
 Try describing:
 - What part of your body is affected?
