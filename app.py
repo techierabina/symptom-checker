@@ -68,10 +68,23 @@ Try describing:
 ⚠️ *This is a student demo, not real medical advice. Always consult a doctor.*
 """
 
+    # Run the model for everything else
     labels = ["mild symptoms", "moderate symptoms", "severe symptoms"]
     result = classifier(symptoms, candidate_labels=labels)
     top_label = result["labels"][0]
     top_score = round(result["scores"][0] * 100, 1)
+
+    # If model isn't confident enough, default to MODERATE
+    if top_score < 70:
+        return f"""
+**Severity: 🟡 MODERATE**
+**Confidence: {top_score}% (low — please describe symptoms in more detail)**
+
+**Recommended action:** Consider seeing a doctor if symptoms persist.
+
+---
+⚠️ *This is a student demo, not real medical advice. Always consult a doctor.*
+"""
 
     advice = {
         "mild symptoms":    ("🟢 MILD",     "Rest at home, stay hydrated, monitor your symptoms."),
@@ -94,7 +107,7 @@ Try describing:
 with gr.Blocks(theme=gr.themes.Soft(font=gr.themes.GoogleFont("Poppins"))) as app:
     gr.Markdown("# 🩺 Symptom Severity Checker")
     gr.Markdown("Type your symptoms in plain English. AI assesses severity and suggests next steps.")
-    
+
     with gr.Row():
         with gr.Column():
             symptoms_input = gr.Textbox(
@@ -102,27 +115,25 @@ with gr.Blocks(theme=gr.themes.Soft(font=gr.themes.GoogleFont("Poppins"))) as ap
                 placeholder="Describe your symptoms... e.g. 'I have a fever and body aches'",
                 label="Your Symptoms"
             )
-            
+
             gr.Markdown("**Try an example:**")
             btn1 = gr.Button("🟢 Slight headache and tired")
             btn2 = gr.Button("🟡 Fever 101 and body aches")
             btn3 = gr.Button("🔴 Chest pain, difficulty breathing")
             btn4 = gr.Button("❓ I feel bad")
             btn5 = gr.Button("⚠️ Mild headache but arm numbness")
-            
+
             submit_btn = gr.Button("Check Symptoms", variant="primary")
-        
+
         with gr.Column():
             output = gr.Markdown(label="Assessment")
-    
-    # wire up example buttons
+
     btn1.click(fn=lambda: "I have a slight headache and feel a little tired", outputs=symptoms_input)
     btn2.click(fn=lambda: "Fever of 101, body aches, and can't get out of bed", outputs=symptoms_input)
     btn3.click(fn=lambda: "Severe chest pain radiating to my left arm, difficulty breathing", outputs=symptoms_input)
     btn4.click(fn=lambda: "I feel bad", outputs=symptoms_input)
     btn5.click(fn=lambda: "Mild headache but also sudden numbness in my left arm", outputs=symptoms_input)
-    
-    # wire up submit
+
     submit_btn.click(fn=check_symptoms, inputs=symptoms_input, outputs=output)
 
 if __name__ == "__main__":
